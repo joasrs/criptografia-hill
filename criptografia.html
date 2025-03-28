@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptografia Hill</title>
+</head>
+<body>
+    <h1>Criptografia</h1>
+    <fieldset>
+        <legend>Criptografia Hill</legend>
+        <input type="text" name="texto" id="textoCriptografia" placeholder="texto aqui">
+        <input type="button" value="criptografar" id="criptografar">
+        <p>resultado criptografia hill:<span id="resultadoCriptografia"></span></p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Descriptografar Hill</legend>
+        <input type="text" name="texto" id="textoDescriptografia" placeholder="texto aqui">
+        <input type="button" value="descriptografar" id="descriptografar">
+        <p>resultado descriptografia hill:<span id="resultadoDescriptografia"></span></p>
+    </fieldset>
+    <script>
+        
+        document.querySelector('#criptografar').addEventListener('click', () => { 
+            const valor = document.querySelector('#textoCriptografia').value;      
+            document.querySelector('#resultadoCriptografia').innerHTML = cripto(false, valor); 
+        });
+
+        document.querySelector('#descriptografar').addEventListener('click', () => {
+            const valor = document.querySelector('#textoDescriptografia').value;      
+            document.querySelector('#resultadoDescriptografia').innerHTML = cripto(true, valor); 
+        });
+
+        function cripto(matrizInversa, palavra){
+            if(palavra.length % 2 === 1){
+                return 'valor precisa ter quantidade de letras pares!';
+            }
+            
+            // matriz base     matriz inversa
+            // | 3 3 |          | 15 17 |
+            // | 2 5 |          | 20  9 |
+            const matrizBase = {
+                a: matrizInversa ? 15 : 3,
+                b: matrizInversa ? 17 : 3,
+                c: matrizInversa ? 20 : 2,
+                d: matrizInversa ? 9 : 5
+            }
+
+            const matrizTexto = palavra.match(/.{1,2}/g) || [];
+            let cripto = '';
+            
+            matrizTexto.forEach(e => {
+                const spl = e.split('').map((letra) => numero(letra));
+                const n1 = spl[0];
+                const n2 = spl[1];
+
+                let resultado1 = ( matrizBase.a*n1 + matrizBase.b*n2 ) % 26;
+                let resultado2 = ( matrizBase.c*n1 + matrizBase.d*n2 ) % 26;
+
+                cripto += `${letra(resultado1)}${letra(resultado2)}`;
+            });
+
+            return cripto;
+        }
+
+        function numero(letra){
+            return letra.toUpperCase().charCodeAt(0) - 65
+        }
+
+        function letra(numeo) {
+            let alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return alfabeto[numeo].toLowerCase() || "?";
+        }
+    </script>
+</body>
+</html>
